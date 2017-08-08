@@ -14,14 +14,18 @@ CKEDITOR.plugins.add( 'table', {
 		if ( editor.blockless )
 			return;
 
-		var lang = editor.lang.table;
+		var lang = editor.lang.table,
+			allowedContent = 'table{width,height}[align,border,cellpadding,cellspacing,summary];' +
+				'caption tbody thead tfoot;' +
+				'th td tr[scope];' +
+				( editor.plugins.dialogadvtab ? 'table' + editor.plugins.dialogadvtab.allowedContent() : '' );
+
+		// Add rules to update acf without registering buttons in toolbar (#654)(#678).
+		editor.filter.allow( allowedContent, 'tableplugin' );
 
 		editor.addCommand( 'table', new CKEDITOR.dialogCommand( 'table', {
 			context: 'table',
-			allowedContent: 'table{width,height}[align,border,cellpadding,cellspacing,summary];' +
-				'caption tbody thead tfoot;' +
-				'th td tr[scope];' +
-				( editor.plugins.dialogadvtab ? 'table' + editor.plugins.dialogadvtab.allowedContent() : '' ),
+			allowedContent: allowedContent,
 			requiredContent: 'table',
 			contentTransformations: [
 				[ 'table{width}: sizeToStyle', 'table[width]: sizeToAttribute' ],
@@ -60,7 +64,8 @@ CKEDITOR.plugins.add( 'table', {
 				if ( !table )
 					return;
 
-				// If the table's parent has only one child remove it as well (unless it's a table cell, or the editable element) (http://dev.ckeditor.com/ticket/5416, http://dev.ckeditor.com/ticket/6289, http://dev.ckeditor.com/ticket/12110)
+				// If the table's parent has only one child remove it as well (unless it's a table cell, or the editable element)
+				// (http://dev.ckeditor.com/ticket/5416, http://dev.ckeditor.com/ticket/6289, http://dev.ckeditor.com/ticket/12110)
 				var parent = table.getParent(),
 					editable = editor.editable();
 

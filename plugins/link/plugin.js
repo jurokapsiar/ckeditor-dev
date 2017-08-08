@@ -49,12 +49,17 @@
 
 		init: function( editor ) {
 			var allowed = 'a[!href]',
-				required = 'a[href]';
+				required = 'a[href]',
+				allowedAnchor = 'a[!name,id]';
 
 			if ( CKEDITOR.dialog.isTabEnabled( editor, 'link', 'advanced' ) )
 				allowed = allowed.replace( ']', ',accesskey,charset,dir,id,lang,name,rel,tabindex,title,type,download]{*}(*)' );
 			if ( CKEDITOR.dialog.isTabEnabled( editor, 'link', 'target' ) )
 				allowed = allowed.replace( ']', ',target,onclick]' );
+
+			// Add rules to update acf without registering buttons in toolbar (#654)(#678).
+			editor.filter.allow( allowed, 'linkplugin' );
+			editor.filter.allow( allowedAnchor, 'anchorplugin' );
 
 			// Add the link and unlink buttons.
 			editor.addCommand( 'link', new CKEDITOR.dialogCommand( 'link', {
@@ -62,7 +67,7 @@
 				requiredContent: required
 			} ) );
 			editor.addCommand( 'anchor', new CKEDITOR.dialogCommand( 'anchor', {
-				allowedContent: 'a[!name,id]',
+				allowedContent: allowedAnchor,
 				requiredContent: 'a[name]'
 			} ) );
 			editor.addCommand( 'unlink', new CKEDITOR.unlinkCommand() );
