@@ -3221,7 +3221,7 @@
 
 	function onBlockWidgetDrag( evt ) {
 		// Allow to drag widget only with left mouse button (#711).
-		if ( evt.data.$.button != 0 ) {
+		if ( typeof evt.data != 'undefined' && evt.data.$.button != 0 ) {
 			return;
 		}
 
